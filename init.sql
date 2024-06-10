@@ -1,0 +1,29 @@
+CREATE TABLE sourcedata (
+	id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+	data INT NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE outputdata (
+	source_id INT UNSIGNED AUTO_INCREMENT,
+	data INT NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY(source_id) REFERENCES sourcedata(id)
+);
+
+ALTER TABLE outputdata ADD CONSTRAINT unq_source UNIQUE (source_id)
+
+DELIMITER $$
+CREATE PROCEDURE generate_data()
+BEGIN
+  DECLARE i INT DEFAULT 0;
+  WHILE i < 1000 DO
+    INSERT INTO `sourcedata` (`data`) VALUES (
+      ROUND(RAND()*100,2)
+    );
+    SET i = i + 1;
+  END WHILE;
+END$$
+DELIMITER ;
+
+CALL generate_data();
